@@ -37,11 +37,11 @@ class CloneAllTests(unittest.TestCase):
         """Parse the owner from common GitHub remote URL shapes."""
 
         self.assertEqual(
-            clone_all.parse_github_owner("https://github.com/Threepwood-7/_workspace"),
+            clone_all.parse_github_owner("https://github.com/Threepwood-7/_py_workspace"),
             "Threepwood-7",
         )
         self.assertEqual(
-            clone_all.parse_github_owner("git@github.com:Threepwood-7/_workspace.git"),
+            clone_all.parse_github_owner("git@github.com:Threepwood-7/_py_workspace.git"),
             "Threepwood-7",
         )
 
@@ -56,13 +56,13 @@ class CloneAllTests(unittest.TestCase):
     def test_build_clone_entries_marks_existing_targets_as_skip(self) -> None:
         """Skip repositories whose target directories already exist."""
 
-        existing_dir = self.target_root / "_workspace"
+        existing_dir = self.target_root / "_py_workspace"
         existing_dir.mkdir(parents=True)
 
         entries = clone_all.build_clone_entries("Threepwood-7", self.target_root)
 
         self.assertEqual(len(entries), len(clone_all.WORKSPACE_REPOSITORIES))
-        skipped = next(entry for entry in entries if entry.repo_name == "_workspace")
+        skipped = next(entry for entry in entries if entry.repo_name == "_py_workspace")
         self.assertEqual(skipped.action, clone_all.CloneAction.SKIP)
         self.assertEqual(skipped.reason, "target already exists")
 
@@ -78,8 +78,8 @@ class CloneAllTests(unittest.TestCase):
             " ".join(str(argument) for argument in call.args)
             for call in print_mock.call_args_list
         )
-        self.assertIn("aatemplate", printed_messages)
-        self.assertIn("_workspace", printed_messages)
+        self.assertIn("_py_template", printed_messages)
+        self.assertIn("_py_workspace", printed_messages)
 
     def test_execute_clone_plan_dry_run_does_not_call_gh(self) -> None:
         """Avoid invoking gh during dry-run mode."""

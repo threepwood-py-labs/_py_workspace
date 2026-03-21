@@ -1,8 +1,8 @@
-# _workspace
+# _py_workspace
 
-Shared, unversioned support folder for the `c:\prj\aidev\py` workspace.
+Shared support repository for the `c:\prj\aidev\py` workspace.
 
-This folder is **not** tracked by any project's git repository. It holds cross-project scripts, specifications, and reference material.
+This repository holds cross-project scripts, specifications, and reference material used by the sibling projects in this workspace.
 
 ## Structure
 

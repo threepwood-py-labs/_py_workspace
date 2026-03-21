@@ -55,7 +55,7 @@ DO follow these rules religiously and you will produce production-grade, zero-de
 
 ## Quick Startup Project Map
 
-- `aatemplate` - source Copier template for this workspace; template-applicable changes start here. `aatemplate` is module-first. Do not add `src/<package>/main.py` as a required template file. If executable support is needed, keep it in `src/<package>/__main__.py` only, so `python -m <package>` works without a separate `main.py`.
+- `_py_template` - source Copier template for this workspace; template-applicable changes start here. `_py_template` is module-first. Do not add `src/<package>/main.py` as a required template file. If executable support is needed, keep it in `src/<package>/__main__.py` only, so `python -m <package>` works without a separate `main.py`.
 - `arr-helper-ui` - Sonarr UI helper and media quality checker toolkit.
 - `git-statuz` - PySide viewer for Git status and history.
 - `many-panelz-explorer` - multi-panel Windows-focused file explorer built with PySide6.
@@ -66,22 +66,22 @@ DO follow these rules religiously and you will produce production-grade, zero-de
 - `threep-commons` - shared reusable runtime and utility library for the Threepwood PySide project family.
 - `video-duperz` - Windows-first PySide app for perceptual duplicate video detection.
 - `web-pagez-to-pdf` - Windows-first PySide app for capturing previous-window screenshots.
-- `_workspace` - shared unversioned support folder for cross-project scripts, specs, and snippets.
+- `_py_workspace` - shared support repository for cross-project scripts, specs, and snippets.
 
 ## Standardization
 
-- `aatemplate` is the source Copier template project for this workspace. Code quality checks should be applied to it too.
-- Validate `aatemplate` by rendering fresh sample projects and running quality checks in the rendered output; do not treat the raw `aatemplate` repo root as a normal Hatch project, and do not expect `hatch run lint:*` to work there directly.
-- All other sibling projects under this directory are Copier-managed targets that should be synced/updated from `aatemplate` (not treated as the template source).
+- `_py_template` is the source Copier template project for this workspace. Code quality checks should be applied to it too.
+- Validate `_py_template` by rendering fresh sample projects and running quality checks in the rendered output; do not treat the raw `_py_template` repo root as a normal Hatch project, and do not expect `hatch run lint:*` to work there directly.
+- All other sibling projects under this directory are Copier-managed targets that should be synced/updated from `_py_template` (not treated as the template source).
 - Ensure to comment methods, classes, and complex logic with concise but effective and easy to parse comments.
-- Only two repos currently contain `setup_wizard.py`: `arr-helper-ui` and `prowlarr-ui`; this file is not template-managed in `aatemplate`.
+- Only two repos currently contain `setup_wizard.py`: `arr-helper-ui` and `prowlarr-ui`; this file is not template-managed in `_py_template`.
 - Ensure to follow best design standards, favor composition, Separation of Concerns, DRY, PEP 20
 - Prefer Python pathlib Path usage, and leverage PureWindowsPath to format Windows Paths.
 - Ensure to perform code linting, type checking, complexity checks, deadcode checks, basedpyright, deptry, ruff, and formatting with `hatch run lint:{check,fmt,types,deps,deadcode,complexity,policy}` whenever a significant change or refactoring is introduced.
 - All new or modified code MUST pass linting, Ruff, and basedpyright checks as real fixes, not by suppression.
 - Do NEVER suppress, skip, downgrade, or config-disable lint, Ruff, basedpyright, or related quality checks for new code. No `noqa`, no `type: ignore`, no per-file ignores, no rule downgrades, and no temporary bypasses unless the user explicitly approves an exception for an unavoidable framework constraint.
 - Never generate or keep `.bat` , `.cmd` , `.ps1` scripts in template outputs; use Python scripts instead.
-- `aatemplate` is a Copier template repo without a root `pyproject.toml`; `uv sync` is not applicable there.
+- `_py_template` is a Copier template repo without a root `pyproject.toml`; `uv sync` is not applicable there.
 - git commit messages should be written in Shakespeare-style old english.
 - All projects under this directory should follow the same coding guidelines, high-level design approaches, configuration handling, etc. They should all be consistent among each other.
 - This set of applications is targeted to technical users that love an effective minimalist UI approach, and great technical details
@@ -117,7 +117,7 @@ DO follow these rules religiously and you will produce production-grade, zero-de
 For Copier-managed projects in this workspace:
 
 1. Do not apply template-applicable changes directly in child repos.
-2. Apply template-applicable changes in `aatemplate` first.
+2. Apply template-applicable changes in `_py_template` first.
 3. Propagate those changes to child repos only through `copier update`.
 4. Direct child-repo edits are allowed only for repo-specific changes that are not template-applicable.
 

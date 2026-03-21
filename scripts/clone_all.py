@@ -15,7 +15,7 @@ EXIT_FAILURE = 1
 
 DEFAULT_GITHUB_OWNER = "Threepwood-7"
 WORKSPACE_REPOSITORIES: tuple[str, ...] = (
-    "aatemplate",
+    "_py_template",
     "arr-helper-ui",
     "git-statuz",
     "many-panelz-explorer",
@@ -25,7 +25,7 @@ WORKSPACE_REPOSITORIES: tuple[str, ...] = (
     "threep-commons",
     "video-duperz",
     "web-pagez-to-pdf",
-    "_workspace",
+    "_py_workspace",
 )
 
 
@@ -96,7 +96,7 @@ def resolve_default_target_root() -> Path:
 
 
 def resolve_script_repo_root() -> Path:
-    """Resolve the `_workspace` repository root that contains this script.
+    """Resolve the `_py_workspace` repository root that contains this script.
 
     Returns:
         Absolute path to the script repository root.
@@ -131,7 +131,7 @@ def parse_github_owner(remote_url: str) -> str | None:
 
 
 def detect_github_owner(script_repo_root: Path) -> str:
-    """Detect the GitHub owner from the current `_workspace` origin remote.
+    """Detect the GitHub owner from the current `_py_workspace` origin remote.
 
     Args:
         script_repo_root: Repository root used to inspect the origin remote.
