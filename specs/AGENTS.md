@@ -89,10 +89,8 @@ DO follow these rules religiously and you will produce production-grade, zero-de
 
 ## Command Execution Rule
 
-- Be AWARE that you are running on Windows 10, PowerShell 7
-- ENSURE TO USE "C:\Program Files\PowerShell\7\pwsh.exe" and not the "Legacy" "powershell.exe"
-- Remember in your global memory errors and issues when generating PowerShell scripts, so to avoid the same issues again.
-- Ensure not to hit Windows command-length limits, so break commands into file-sized patches or use supporting python scripts instead.
+- Be AWARE that you are running on Windows 10, PowerShell 7, load and strictly follow the PowerShell guide from `c:\prj\aidev\specs\POWERSHELL_GUIDE.md`
+
 - User shorthand: `cuus` means "commit and push to GitHub."
 - You are allowed to use the companion directory `c:\tmp\pycompa` to create temporary files, be SURE not to change anything outside of it
 - when running tests, do NOT overwrite the current user appdata and localappdata, use the companion directory `c:\tmp\pycompa\_USERPROFILE` instead
@@ -131,7 +129,7 @@ For Copier-managed projects in this workspace:
 - Keep import strategy consistent and explicit across the codebase.
 - Do not introduce wrappers or legacy import mappings during refactors.
 - When refactoring is requested, allow breaking import changes and update all call sites directly to the new module paths. Prefer breaking changes to achieve a better code quality or design.
-- Do intermediate commits during refactoring.
+- Ensure to perform commits for each block of edits to offer a granular history of changes, prefix them appropriately like WIP, BUG, FIX, DOC, etc..
 - When performing code refactor, splitting of classes, app settings changes:
   - it is OK breaking public APIs, even across different projects / modules
   - no legacy wrapper should be created, focus on the refactor target
