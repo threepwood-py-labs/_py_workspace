@@ -74,6 +74,7 @@ DO follow these rules religiously and you will produce production-grade, zero-de
 - Validate `_py_template` by rendering fresh sample projects and running quality checks in the rendered output; do not treat the raw `_py_template` repo root as a normal Hatch project, and do not expect `hatch run lint:*` to work there directly.
 - All other sibling projects under this directory are Copier-managed targets that should be synced/updated from `_py_template` (not treated as the template source).
 - Ensure to comment methods, classes, and complex logic with concise but effective and easy to parse comments.
+- Ensure to perform commits for each block of edits to offer a granular history of changes, prefix them appropriately like WIP, BUG, FIX, DOC, etc..
 - Only two repos currently contain `setup_wizard.py`: `arr-helper-ui` and `prowlarr-ui`; this file is not template-managed in `_py_template`.
 - Ensure to follow best design standards, favor composition, Separation of Concerns, DRY, PEP 20
 - Prefer Python pathlib Path usage, and leverage PureWindowsPath to format Windows Paths.
@@ -129,7 +130,6 @@ For Copier-managed projects in this workspace:
 - Keep import strategy consistent and explicit across the codebase.
 - Do not introduce wrappers or legacy import mappings during refactors.
 - When refactoring is requested, allow breaking import changes and update all call sites directly to the new module paths. Prefer breaking changes to achieve a better code quality or design.
-- Ensure to perform commits for each block of edits to offer a granular history of changes, prefix them appropriately like WIP, BUG, FIX, DOC, etc..
 - When performing code refactor, splitting of classes, app settings changes:
   - it is OK breaking public APIs, even across different projects / modules
   - no legacy wrapper should be created, focus on the refactor target
