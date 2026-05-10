@@ -131,7 +131,7 @@ class MaterializeTests(unittest.TestCase):
 
         self.assertIn(["git", "branch", "-f", "develop", "HEAD"], calls)
         self.assertIn(
-            ["git", "push", "-u", "origin", "develop", "--force-with-lease"],
+            ["git", "push", "-u", "--force-with-lease", "origin", "develop"],
             calls,
         )
 

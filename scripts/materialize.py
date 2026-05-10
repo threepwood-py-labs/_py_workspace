@@ -283,9 +283,10 @@ def run_branch_normalization(repo_path: Path, repo_name: str, *, dry_run: bool) 
     run_command(["git", "branch", "-f", CANONICAL_BRANCH, "HEAD"], cwd=repo_path)
     run_command(["git", "checkout", CANONICAL_BRANCH], cwd=repo_path)
     remote_ref = f"refs/remotes/origin/{CANONICAL_BRANCH}"
-    push_command = ["git", "push", "-u", "origin", CANONICAL_BRANCH]
+    push_command = ["git", "push", "-u"]
     if ref_exists(repo_path, remote_ref):
         push_command.append("--force-with-lease")
+    push_command.extend(["origin", CANONICAL_BRANCH])
     run_command(push_command, cwd=repo_path)
 
 
