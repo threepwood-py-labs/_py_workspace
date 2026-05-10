@@ -13,13 +13,14 @@ from pathlib import Path
 EXIT_SUCCESS = 0
 EXIT_FAILURE = 1
 
-DEFAULT_GITHUB_OWNER = "Threepwood-7"
+DEFAULT_GITHUB_OWNER = "threepwood-py-labs"
 WORKSPACE_REPOSITORIES: tuple[str, ...] = (
     "_py_template",
     "arr-helper-ui",
     "git-statuz",
     "many-panelz-explorer",
     "mp3gain-gui-py",
+    "pdf-search-downloader-ui",
     "prowlarr-ui",
     "qbiremo-enhanced",
     "threep-commons",

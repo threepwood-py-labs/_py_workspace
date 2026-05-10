@@ -37,12 +37,16 @@ class CloneAllTests(unittest.TestCase):
         """Parse the owner from common GitHub remote URL shapes."""
 
         self.assertEqual(
-            clone_all.parse_github_owner("https://github.com/Threepwood-7/_py_workspace"),
-            "Threepwood-7",
+            clone_all.parse_github_owner(
+                "https://github.com/threepwood-py-labs/_py_workspace"
+            ),
+            "threepwood-py-labs",
         )
         self.assertEqual(
-            clone_all.parse_github_owner("git@github.com:Threepwood-7/_py_workspace.git"),
-            "Threepwood-7",
+            clone_all.parse_github_owner(
+                "git@github.com:threepwood-py-labs/_py_workspace.git"
+            ),
+            "threepwood-py-labs",
         )
 
     def test_detect_github_owner_falls_back_when_remote_missing(self) -> None:
@@ -59,7 +63,9 @@ class CloneAllTests(unittest.TestCase):
         existing_dir = self.target_root / "_py_workspace"
         existing_dir.mkdir(parents=True)
 
-        entries = clone_all.build_clone_entries("Threepwood-7", self.target_root)
+        entries = clone_all.build_clone_entries(
+            clone_all.DEFAULT_GITHUB_OWNER, self.target_root
+        )
 
         self.assertEqual(len(entries), len(clone_all.WORKSPACE_REPOSITORIES))
         skipped = next(entry for entry in entries if entry.repo_name == "_py_workspace")
@@ -69,7 +75,9 @@ class CloneAllTests(unittest.TestCase):
     def test_print_plan_lists_full_clone_set(self) -> None:
         """Print every entry in the clone plan."""
 
-        entries = clone_all.build_clone_entries("Threepwood-7", self.target_root)
+        entries = clone_all.build_clone_entries(
+            clone_all.DEFAULT_GITHUB_OWNER, self.target_root
+        )
 
         with mock.patch("builtins.print") as print_mock:
             clone_all.print_plan(entries, self.target_root, dry_run=True)
@@ -84,7 +92,9 @@ class CloneAllTests(unittest.TestCase):
     def test_execute_clone_plan_dry_run_does_not_call_gh(self) -> None:
         """Avoid invoking gh during dry-run mode."""
 
-        entries = clone_all.build_clone_entries("Threepwood-7", self.target_root)
+        entries = clone_all.build_clone_entries(
+            clone_all.DEFAULT_GITHUB_OWNER, self.target_root
+        )
         with mock.patch.object(clone_all, "ensure_gh_available") as ensure_gh_mock:
             with mock.patch.object(clone_all.subprocess, "run") as run_mock:
                 rc = clone_all.execute_clone_plan(entries, dry_run=True)
@@ -95,7 +105,9 @@ class CloneAllTests(unittest.TestCase):
     def test_execute_clone_plan_invokes_gh_for_missing_repositories(self) -> None:
         """Clone every missing repository with gh repo clone."""
 
-        entries = clone_all.build_clone_entries("Threepwood-7", self.target_root)
+        entries = clone_all.build_clone_entries(
+            clone_all.DEFAULT_GITHUB_OWNER, self.target_root
+        )
         with mock.patch.object(clone_all, "ensure_gh_available", return_value=True):
             with mock.patch.object(
                 clone_all.subprocess,
@@ -109,7 +121,9 @@ class CloneAllTests(unittest.TestCase):
     def test_execute_clone_plan_reports_failures(self) -> None:
         """Return failure when any gh clone call fails."""
 
-        entries = clone_all.build_clone_entries("Threepwood-7", self.target_root)
+        entries = clone_all.build_clone_entries(
+            clone_all.DEFAULT_GITHUB_OWNER, self.target_root
+        )
         results = [
             mock.Mock(returncode=0, stdout="", stderr="")
             for _ in range(len(entries) - 1)
@@ -134,7 +148,9 @@ class CloneAllTests(unittest.TestCase):
                 clone_all, "resolve_script_repo_root", return_value=self.target_root
             ):
                 with mock.patch.object(
-                    clone_all, "detect_github_owner", return_value="Threepwood-7"
+                    clone_all,
+                    "detect_github_owner",
+                    return_value=clone_all.DEFAULT_GITHUB_OWNER,
                 ):
                     rc = clone_all.main(["--dry-run"])
         self.assertEqual(rc, clone_all.EXIT_SUCCESS)
