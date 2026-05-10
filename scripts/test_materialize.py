@@ -127,9 +127,45 @@ class MaterializeTests(unittest.TestCase):
 
         with mock.patch.object(materialize, "run_command", side_effect=fake_run_command):
             with mock.patch.object(materialize, "ref_exists", return_value=True):
-                materialize.run_branch_normalization(repo_path, "demo", dry_run=False)
+                with mock.patch.object(
+                    materialize,
+                    "get_current_branch",
+                    return_value="feature/demo",
+                ):
+                    materialize.run_branch_normalization(repo_path, "demo", dry_run=False)
 
         self.assertIn(["git", "branch", "-f", "develop", "HEAD"], calls)
+        self.assertIn(
+            ["git", "push", "-u", "--force-with-lease", "origin", "develop"],
+            calls,
+        )
+
+    def test_branch_normalization_skips_current_develop_force_update(self) -> None:
+        """Avoid force-updating develop while it is checked out."""
+
+        repo_path = self.target_root / "demo"
+        calls: list[list[str]] = []
+
+        def fake_run_command(
+            args: list[str],
+            *,
+            cwd: Path,
+            allow_failure: bool = False,
+        ) -> mock.Mock:
+            del cwd, allow_failure
+            calls.append(args)
+            return mock.Mock(returncode=0, stdout="", stderr="")
+
+        with mock.patch.object(materialize, "run_command", side_effect=fake_run_command):
+            with mock.patch.object(materialize, "ref_exists", return_value=True):
+                with mock.patch.object(
+                    materialize,
+                    "get_current_branch",
+                    return_value="develop",
+                ):
+                    materialize.run_branch_normalization(repo_path, "demo", dry_run=False)
+
+        self.assertNotIn(["git", "branch", "-f", "develop", "HEAD"], calls)
         self.assertIn(
             ["git", "push", "-u", "--force-with-lease", "origin", "develop"],
             calls,

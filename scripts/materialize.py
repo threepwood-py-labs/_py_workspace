@@ -274,14 +274,15 @@ def ref_exists(repo_path: Path, ref_name: str) -> bool:
 def run_branch_normalization(repo_path: Path, repo_name: str, *, dry_run: bool) -> None:
     """Move current checked-out work onto the canonical develop branch."""
 
+    branch = get_current_branch(repo_path)
     if dry_run:
-        branch = get_current_branch(repo_path)
         print(f"DRY-RUN normalize {repo_name}: {branch} -> {CANONICAL_BRANCH}")
         return
 
     run_command(["git", "fetch", "origin", "--prune"], cwd=repo_path)
-    run_command(["git", "branch", "-f", CANONICAL_BRANCH, "HEAD"], cwd=repo_path)
-    run_command(["git", "checkout", CANONICAL_BRANCH], cwd=repo_path)
+    if branch != CANONICAL_BRANCH:
+        run_command(["git", "branch", "-f", CANONICAL_BRANCH, "HEAD"], cwd=repo_path)
+        run_command(["git", "checkout", CANONICAL_BRANCH], cwd=repo_path)
     remote_ref = f"refs/remotes/origin/{CANONICAL_BRANCH}"
     push_command = ["git", "push", "-u"]
     if ref_exists(repo_path, remote_ref):
