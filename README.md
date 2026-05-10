@@ -63,3 +63,30 @@ Safety behavior:
 After a real run, the command writes
 `docs/workspace/materialize-status.md` with the latest workspace-relative repo
 status.
+
+## Privacy Audit
+
+Use `scripts/audit_privacy.py` before publishing workspace changes. The command
+scans Git-tracked files in the canonical repositories for local paths, personal
+identifiers, committed environment files, and literal secret-style assignments.
+It is read-only and does not rewrite or delete files.
+
+Run the full workspace audit:
+
+```powershell
+python scripts/audit_privacy.py
+```
+
+Audit one repository and emit a machine-readable report:
+
+```powershell
+python scripts/audit_privacy.py --repo arr-helper-ui --json --summary-path reports/privacy-audit.json
+```
+
+The audit derives personal identifiers from `USERNAME`, `USER`, `USERPROFILE`,
+and `HOME`. Add extra local identifiers for one run with:
+
+```powershell
+$env:TRACKED_FILE_PRIVACY_IDENTIFIERS = 'local-name,old-machine-name'
+python scripts/audit_privacy.py
+```

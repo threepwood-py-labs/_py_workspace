@@ -1,0 +1,51 @@
+{
+  "policyVersion": "tracked-file-privacy-guard-policy/v1",
+  "excludedPathRegexes": [
+    "(^|[\\\\/])__pycache__([\\\\/]|$)",
+    "(^|[\\\\/])\\.pytest_cache([\\\\/]|$)",
+    "(^|[\\\\/])\\.ruff_cache([\\\\/]|$)",
+    "(^|[\\\\/])\\.venv([\\\\/]|$)",
+    "(^|[\\\\/])build([\\\\/]|$)",
+    "(^|[\\\\/])dist([\\\\/]|$)",
+    "(^|[\\\\/])reports([\\\\/]|$)"
+  ],
+  "pathRules": [
+    {
+      "id": "tracked-env-file",
+      "reason": "Tracked repositories must not publish local environment files.",
+      "regex": "(^|[\\\\/])\\.env(\\..*)?$"
+    },
+    {
+      "id": "tracked-local-config",
+      "reason": "Tracked repositories must not publish local-only config or cache artifacts.",
+      "regex": "(^|[\\\\/])[^\\\\/]*(local|private|secret|credential|password|token|apikey|api-key)[^\\\\/]*\\.(json|toml|yaml|yml|ini|cfg|sqlite|sqlite3|db)$"
+    }
+  ],
+  "contentRules": [
+    {
+      "id": "windows-user-profile-path",
+      "reason": "Tracked content must not contain committed Windows user-profile paths.",
+      "regex": "C:\\\\Users\\\\[A-Za-z0-9_][A-Za-z0-9._-]*"
+    },
+    {
+      "id": "windows-user-profile-path-forward-slash",
+      "reason": "Tracked content must not contain committed Windows user-profile paths written with forward slashes.",
+      "regex": "C:/Users/[A-Za-z0-9_][A-Za-z0-9._-]*"
+    },
+    {
+      "id": "unix-macos-user-profile-path",
+      "reason": "Tracked content must not contain committed macOS user-profile paths.",
+      "regex": "/Users/[A-Za-z0-9_][A-Za-z0-9._-]*"
+    },
+    {
+      "id": "unix-home-path",
+      "reason": "Tracked content must not contain committed Unix home-directory paths.",
+      "regex": "/home/[A-Za-z0-9_][A-Za-z0-9._-]*"
+    },
+    {
+      "id": "literal-secret-assignment",
+      "reason": "Tracked content must not contain literal secret, token, password, or API key assignments.",
+      "regex": "(?i)\\b(api[_-]?key|secret|token|password|credential)\\b\\s*[:=]\\s*[\"'](?!$|your-|YOUR_|CHANGE_ME|changeme|example|placeholder|test|dummy|abc|x[\"'])[A-Za-z0-9][^\"']{7,}[\"']"
+    }
+  ]
+}
