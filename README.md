@@ -21,6 +21,15 @@ normalizes their canonical branch to `develop`, ensures the GitHub default branc
 is `develop`, and runs each repository's `scripts/windows/setup_env.py` when it
 exists.
 
+Materialize also manages the org-facing repositories:
+
+- `.github` - GitHub organization profile content
+- `threepwood-py-labs.github.io` - static GitHub Pages landing site
+
+On a real run, materialize persists `THREEPWOOD_PY_WORKSPACE_ROOT` to the
+current process and to the Windows user environment. Restart existing shells to
+pick up the persisted value.
+
 Preview the plan without changing repositories:
 
 ```powershell
@@ -49,6 +58,7 @@ Safety behavior:
 - remote `develop` is updated with `--force-with-lease` when it already exists
 - old local branches such as `main`, `master`, or feature branches are preserved
 - release tags and release packages are never created by materialize
+- `THREEPWOOD_PY_WORKSPACE_ROOT` is updated during real materialize runs
 
 After a real run, the command writes
 `docs/workspace/materialize-status.md` with the latest workspace-relative repo

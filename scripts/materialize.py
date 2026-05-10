@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import subprocess
 import sys
 from collections.abc import Sequence
@@ -15,8 +16,10 @@ EXIT_FAILURE = 1
 
 DEFAULT_GITHUB_OWNER = "threepwood-py-labs"
 CANONICAL_BRANCH = "develop"
+WORKSPACE_ROOT_ENV_VAR = "THREEPWOOD_PY_WORKSPACE_ROOT"
 STATUS_REPORT_PATH = Path("docs") / "workspace" / "materialize-status.md"
 WORKSPACE_REPOSITORIES: tuple[str, ...] = (
+    ".github",
     "_py_template",
     "_py_workspace",
     "arr-helper-ui",
@@ -28,6 +31,7 @@ WORKSPACE_REPOSITORIES: tuple[str, ...] = (
     "prowlarr-ui",
     "qbiremo-enhanced",
     "threep-commons",
+    "threepwood-py-labs.github.io",
     "video-duperz",
     "web-pagez-to-pdf",
 )
@@ -271,6 +275,17 @@ def ref_exists(repo_path: Path, ref_name: str) -> bool:
     return result.returncode == 0
 
 
+def head_exists(repo_path: Path) -> bool:
+    """Return whether a repository has at least one commit."""
+
+    result = run_command(
+        ["git", "rev-parse", "--verify", "HEAD"],
+        cwd=repo_path,
+        allow_failure=True,
+    )
+    return result.returncode == 0
+
+
 def run_branch_normalization(repo_path: Path, repo_name: str, *, dry_run: bool) -> None:
     """Move current checked-out work onto the canonical develop branch."""
 
@@ -280,6 +295,9 @@ def run_branch_normalization(repo_path: Path, repo_name: str, *, dry_run: bool) 
         return
 
     run_command(["git", "fetch", "origin", "--prune"], cwd=repo_path)
+    if not head_exists(repo_path):
+        print(f"Repository '{repo_name}' is empty; branch normalization deferred.")
+        return
     if branch != CANONICAL_BRANCH:
         run_command(["git", "branch", "-f", CANONICAL_BRANCH, "HEAD"], cwd=repo_path)
         run_command(["git", "checkout", CANONICAL_BRANCH], cwd=repo_path)
@@ -306,6 +324,34 @@ def set_default_branch(owner: str, repo_name: str, *, cwd: Path, dry_run: bool) 
         print(f"DRY-RUN set default branch: {' '.join(command)}")
         return
     run_command(command, cwd=cwd)
+
+
+def set_workspace_root_environment(target_root: Path, *, dry_run: bool) -> None:
+    """Persist the canonical workspace root for this process and Windows user env."""
+
+    resolved = str(target_root.resolve())
+    if dry_run:
+        print(f"DRY-RUN set {WORKSPACE_ROOT_ENV_VAR}={resolved}")
+        return
+    os.environ[WORKSPACE_ROOT_ENV_VAR] = resolved
+    if sys.platform == "win32":
+        import winreg
+
+        with winreg.OpenKey(
+            winreg.HKEY_CURRENT_USER,
+            "Environment",
+            0,
+            winreg.KEY_SET_VALUE,
+        ) as key:
+            winreg.SetValueEx(
+                key,
+                WORKSPACE_ROOT_ENV_VAR,
+                0,
+                winreg.REG_EXPAND_SZ,
+                resolved,
+            )
+    print(f"{WORKSPACE_ROOT_ENV_VAR}={resolved}")
+    print("Restart existing shells to pick up the persisted user environment value.")
 
 
 def run_setup(repo_path: Path, repo_name: str, *, dry_run: bool, skip_setup: bool) -> SetupResult:
@@ -335,6 +381,15 @@ def materialize_repo(options: MaterializeOptions, repo_name: str) -> RepoStatus:
     ensure_github_repo(options.owner, repo_name, options.target_root, dry_run=options.dry_run)
     if not repo_path.exists():
         clone_missing_repo(options.owner, repo_name, repo_path, dry_run=options.dry_run)
+        if options.dry_run:
+            return RepoStatus(
+                name=repo_name,
+                relative_path=repo_name,
+                remote=canonical_remote(options.owner, repo_name),
+                branch=CANONICAL_BRANCH,
+                default_branch=CANONICAL_BRANCH,
+                setup_result=SetupResult.DRY_RUN,
+            )
     else:
         ensure_git_worktree(repo_path, repo_name)
 
@@ -342,7 +397,13 @@ def materialize_repo(options: MaterializeOptions, repo_name: str) -> RepoStatus:
         assert_clean_repo(repo_path, repo_name)
     ensure_origin(repo_path, repo_name, options.owner, dry_run=options.dry_run)
     run_branch_normalization(repo_path, repo_name, dry_run=options.dry_run)
-    set_default_branch(options.owner, repo_name, cwd=options.target_root, dry_run=options.dry_run)
+    if options.dry_run or head_exists(repo_path):
+        set_default_branch(
+            options.owner,
+            repo_name,
+            cwd=options.target_root,
+            dry_run=options.dry_run,
+        )
     setup_result = run_setup(
         repo_path,
         repo_name,
@@ -422,6 +483,7 @@ def materialize_workspace(options: MaterializeOptions) -> int:
 
     ensure_tool_available("git", options.target_root)
     ensure_tool_available("gh", options.target_root)
+    set_workspace_root_environment(options.target_root, dry_run=options.dry_run)
     statuses: list[RepoStatus] = []
     failures: list[str] = []
     for repo_name in WORKSPACE_REPOSITORIES:
