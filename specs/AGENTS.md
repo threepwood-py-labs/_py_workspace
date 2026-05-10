@@ -85,7 +85,7 @@ DO follow these rules religiously and you will produce production-grade, zero-de
 - `_py_template` is a Copier template repo without a root `pyproject.toml`; `uv sync` is not applicable there.
 - All projects under this directory should follow the same coding guidelines, high-level design approaches, configuration handling, etc. They should all be consistent among each other.
 - This set of applications is targeted to technical users that love an effective minimalist UI approach, and great technical details
-- Release tags should follow a r-0.1.1 pattern where only minor .1 is updated unless specifically instructed
+- Release tags should follow a v0.1.1 pattern where only minor .1 is updated unless specifically instructed
 
 ## Command Execution Rule
 
